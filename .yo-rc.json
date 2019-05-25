@@ -1,0 +1,21 @@
+{
+  "generator-ngx-rocket": {
+    "version": "6.1.0",
+    "props": {
+      "location": "path",
+      "appName": "vtc",
+      "target": ["web"],
+      "pwa": true,
+      "ui": "bootstrap",
+      "auth": true,
+      "lazy": false,
+      "angulartics": false,
+      "tools": ["prettier", "hads"],
+      "utility": ["lodash", "moment"],
+      "projectName": "vtc",
+      "packageManager": "npm",
+      "mobile": [],
+      "desktop": []
+    }
+  }
+}
