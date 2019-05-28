@@ -2,6 +2,10 @@ import { Injectable } from '@angular/core';
 import { Observable, of } from 'rxjs';
 
 import { Credentials, CredentialsService } from './credentials.service';
+import { JWTService } from '@app/services/jwt.services';
+import { Logger } from '@app/core/logger.service';
+
+const log = new Logger('AuthenticationService');
 
 export interface LoginContext {
   username: string;
@@ -15,21 +19,45 @@ export interface LoginContext {
  */
 @Injectable()
 export class AuthenticationService {
-  constructor(private credentialsService: CredentialsService) {}
+  accessToken: any;
+  token: any;
+  error: string;
+  datastorage: any;
+
+  constructor(private credentialsService: CredentialsService, private jwtService: JWTService) {}
 
   /**
    * Authenticates the user.
    * @param context The login parameters.
    * @return The user credentials.
    */
+
   login(context: LoginContext): Observable<Credentials> {
     // Replace by proper authentication call
-    const data = {
-      username: context.username,
-      token: '123456'
+    const logininfo = {
+      email: context.username,
+      password: context.password
     };
-    this.credentialsService.setCredentials(data, context.remember);
-    return of(data);
+
+    this.jwtService.login(logininfo).subscribe(
+      data => {
+        this.accessToken = data;
+        log.debug('accessToken ' + this.accessToken);
+
+        this.token = this.accessToken.access_token;
+        log.debug('token befor ' + this.accessToken.access_token);
+        this.datastorage = {
+          username: context.username,
+          token: this.token
+        };
+        log.debug('token after ' + this.token);
+        this.credentialsService.setCredentials(this.datastorage, context.remember);
+      },
+      error => {
+        this.error = 'Error detail: ' + JSON.stringify(error);
+      }
+    );
+    return of(this.datastorage);
   }
 
   /**
