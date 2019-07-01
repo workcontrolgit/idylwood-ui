@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Observable, of } from 'rxjs';
-
+import { map } from 'rxjs/operators';
 import { Credentials, CredentialsService } from './credentials.service';
 import { JWTService } from '@app/services/jwt.services';
 import { Logger } from '@app/core/logger.service';
@@ -19,7 +19,7 @@ export interface LoginContext {
  */
 @Injectable()
 export class AuthenticationService {
-  accessToken: any;
+  jwt: any;
   token: any;
   error: string;
   datastorage: any;
@@ -39,24 +39,30 @@ export class AuthenticationService {
       password: context.password
     };
 
-    this.jwtService.login(logininfo).subscribe(
-      data => {
-        this.accessToken = data;
-        log.debug('accessToken ' + this.accessToken);
+    const token$ = this.jwtService.login(logininfo);
+    // log.debug('login ' + JSON.stringify(this.login$));
 
-        this.token = this.accessToken.access_token;
-        log.debug('token befor ' + this.accessToken.access_token);
+    token$.subscribe(
+      res => {
+        this.jwt = res;
+        //log.debug('jwt ' + JSON.stringify(this.jwt));
+        this.token = this.jwt.token;
+        //log.debug('token ' + this.jwt.token);
         this.datastorage = {
           username: context.username,
           token: this.token
         };
-        log.debug('token after ' + this.token);
+        log.debug('datastorage inside ' + JSON.stringify(this.datastorage));
         this.credentialsService.setCredentials(this.datastorage, context.remember);
+        return of(this.datastorage);
       },
       error => {
         this.error = 'Error detail: ' + JSON.stringify(error);
+        // return of(this.datastorage);
       }
     );
+
+    log.debug('datastorage outside ' + JSON.stringify(this.datastorage));
     return of(this.datastorage);
   }
 

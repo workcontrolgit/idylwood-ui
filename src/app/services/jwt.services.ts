@@ -23,7 +23,7 @@ export class JWTService {
 
     log.debug('Calling getToken');
     // const serviceUrl = `/Authorize`;
-    const serviceUrl = environment.oAuthServerUrl + '/auth/login';
+    const serviceUrl = environment.oAuthServerUrl + '/api-token-auth';
     return this.httpClient.post<any>(serviceUrl, loginInfo);
   }
 }
