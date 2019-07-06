@@ -53,8 +53,7 @@ export class AuthenticationService {
           token: this.token
         };
         log.debug('datastorage inside ' + JSON.stringify(this.datastorage));
-        this.credentialsService.setCredentials(this.datastorage, context.remember);
-        return of(this.datastorage);
+        // return of(this.datastorage);
       },
       error => {
         this.error = 'Error detail: ' + JSON.stringify(error);
@@ -63,6 +62,7 @@ export class AuthenticationService {
     );
 
     log.debug('datastorage outside ' + JSON.stringify(this.datastorage));
+    this.credentialsService.setCredentials(this.datastorage, context.remember);
     return of(this.datastorage);
   }
 
