@@ -45,24 +45,33 @@ export class AuthenticationService {
     token$.subscribe(
       res => {
         this.jwt = res;
-        //log.debug('jwt ' + JSON.stringify(this.jwt));
+        log.debug('jwt value: ' + JSON.stringify(this.jwt));
         this.token = this.jwt.token;
-        //log.debug('token ' + this.jwt.token);
-        this.datastorage = {
-          username: context.username,
-          token: this.token
-        };
-        log.debug('datastorage inside ' + JSON.stringify(this.datastorage));
-        // return of(this.datastorage);
+        log.debug('token value: ' + JSON.stringify(this.token));
       },
       error => {
         this.error = 'Error detail: ' + JSON.stringify(error);
+        //log.debug(this.error);
         // return of(this.datastorage);
       }
     );
 
-    log.debug('datastorage outside ' + JSON.stringify(this.datastorage));
-    this.credentialsService.setCredentials(this.datastorage, context.remember);
+    if (this.error) {
+      log.debug('failed login validation');
+      log.debug('this.error value: ' + this.error);
+    } else {
+      log.debug('passed login validation');
+      log.debug('this.error value: ' + this.error);
+      log.debug('set datastorage token value: ' + JSON.stringify(this.token));
+      this.datastorage = {
+        username: context.username,
+        token: this.token
+      };
+      log.debug('datastorage value: ' + JSON.stringify(this.datastorage));
+      // set application token
+      this.credentialsService.setCredentials(this.datastorage, context.remember);
+    }
+    log.debug('return datastorage: ' + JSON.stringify(this.datastorage));
     return of(this.datastorage);
   }
 
